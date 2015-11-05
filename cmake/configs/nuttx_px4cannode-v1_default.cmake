@@ -1,5 +1,7 @@
 include(nuttx/px4_impl_nuttx)
 
+add_definitions(-DPARAM_NO_ORB)
+
 px4_nuttx_configure(HWCLASS m3 CONFIG nsh)
 
 #
@@ -12,7 +14,17 @@ set(UAVCANBLID_SW_VERSION_MINOR 1)
 # Bring in common uavcan hardware version definitions
 #
 
-include(configs/uavcan_board/px4cannode-v1)
+include(configs/uavcan_board_ident/px4cannode-v1)
+
+px4_nuttx_make_uavcan_bootloadable(
+ BOARD ${BOARD}
+ BIN ${CMAKE_CURRENT_BINARY_DIR}/firmware_nuttx.bin
+ NAME ${UAVCANBLID_NAME}
+ HW_MAJOR ${UAVCANBLID_HW_VERSION_MAJOR}
+ HW_MINOR ${UAVCANBLID_HW_VERSION_MINOR}
+ SW_MAJOR ${UAVCANBLID_SW_VERSION_MAJOR}
+ SW_MINOR ${UAVCANBLID_SW_VERSION_MINOR}
+)
 
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/toolchains/Toolchain-arm-none-eabi.cmake)
 
@@ -23,7 +35,6 @@ set(config_module_list
 	#
 
 	drivers/stm32
-	drivers/stm32/adc
 	drivers/led
 	drivers/boards/px4cannode-v1
 
